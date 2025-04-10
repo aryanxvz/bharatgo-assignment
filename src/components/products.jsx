@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react"
 import { HiPlus } from "react-icons/hi"
+import { ProductDetail } from "./product-details"
+import { useLocation } from "react-router-dom"
 
 export const Products = ({ currentPath }) => {
   const [products, setProducts] = useState([])
   const [filteredProducts, setFilteredProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
+  const [selectedProduct, setSelectedProduct] = useState(null)
+  const location = useLocation()
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -54,6 +58,18 @@ export const Products = ({ currentPath }) => {
     setSearchQuery(e.target.value)
   }
 
+  const handleProductClick = (product) => {
+    setSelectedProduct(product)
+  }
+
+  const handleCloseDetail = () => {
+    setSelectedProduct(null)
+  }
+
+  useEffect(() => {
+    setSelectedProduct(null)
+  }, [location.pathname])
+
   if (loading) {
     return <div className="text-center py-40">Loading...</div>
   }
@@ -66,18 +82,13 @@ export const Products = ({ currentPath }) => {
     <section className="flex flex-col items-center">
       <div className="flex flex-col justify-center items-center mt-20">
         <span>Home</span>
-        <input 
-          placeholder="Search a product" 
-          className="w-80 rounded-lg p-4 my-4 border border-black" 
-          value={searchQuery}
-          onChange={handleSearchChange}
-        />
+        <input placeholder="Search a product" value={searchQuery} onChange={handleSearchChange} className="w-80 rounded-lg p-4 my-4 border border-black" />
       </div>
 
       <div className="grid w-full max-w-screen-lg justify-center sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 sm:gap-2 md:gap-3 xl:gap-4 place-items-center">
 
         {filteredProducts.map((product) => (
-          <div key={product.id} className="relative rounded-xl hover:cursor-pointer w-56 h-60 active:scale-110 transition ease duration-75">
+          <div key={product.id} onClick={() => handleProductClick(product)} className="relative rounded-xl hover:cursor-pointer w-56 h-60 active:scale-110 transition ease duration-75">
             <div className="relative w-full h-4/5 mb-2">
               <img src={product.images[0]} alt={product.title} className="w-full h-full object-cover rounded-lg" />
               <div className="absolute bottom-0 left-0 bg-white/60 rounded-lg text-black text-sm m-1 px-2">{product.category.name}</div>
@@ -93,6 +104,12 @@ export const Products = ({ currentPath }) => {
         ))}
         
       </div>
+      {selectedProduct && (
+        <ProductDetail 
+          product={selectedProduct}
+          onClose={handleCloseDetail}
+        />
+      )}
     </section>
   )
 }
