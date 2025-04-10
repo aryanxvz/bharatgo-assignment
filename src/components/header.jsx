@@ -7,7 +7,7 @@ export const Header = () => {
 
   return (
     <>
-      <section className="bg-white flex justify-between items-center fixed z-50 top-0 w-full border-b-2 border-opacity-25 py-5 px-8 backdrop-blur">
+      <section className="bg-white flex justify-between items-center fixed z-50 top-0 w-full border-b-2 border-b-gray-200 py-5 px-8">
         <ul className="flex items-center gap-4">
           <li className="text-lg font-semibold md:inline hidden">
             <Link to="/">Shopi</Link>
@@ -30,7 +30,7 @@ export const Header = () => {
         </ul>
 
         <ul className="flex items-center gap-4">
-          <li className="text-sm font-light text-gray-600">
+          <li className="text-sm font-light text-gray-500">
             userintheapp@test.com
           </li>
           <li className="text-sm font-light">
