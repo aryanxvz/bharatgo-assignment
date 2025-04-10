@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react"
 import { HiPlus } from "react-icons/hi"
 
-export const Products = () => {
+export const Products = ({ currentPath }) => {
   const [products, setProducts] = useState([])
+  const [filteredProducts, setFilteredProducts] = useState([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -11,6 +12,7 @@ export const Products = () => {
         const res = await fetch("https://api.escuelajs.co/api/v1/products")
         const data = await res.json()
         setProducts(data)
+        setFilteredProducts(data)
       } catch (error) {
         console.error("error fetching the products:", error)
       } finally {
@@ -20,15 +22,39 @@ export const Products = () => {
     fetchProducts()
   }, [])
 
+  useEffect(() => {
+    if (products.length === 0) return
+    
+    const categoryMap = {
+      '/clothes': 'Clothes',
+      '/electronics': 'Electronics',
+      '/furnitures': 'Furniture',
+      '/toys': 'Toys'
+    }
+    
+    if (currentPath === '/') {
+      setFilteredProducts(products)
+    } else if (categoryMap[currentPath]) {
+      const filtered = products.filter(product => 
+        product.category.name.toLowerCase().includes(categoryMap[currentPath].toLowerCase())
+      )
+      setFilteredProducts(filtered)
+    }
+  }, [currentPath, products])
+
   if (loading) {
-    return <div className="text-center py-40">nothing related &#58;&#40;</div>
+    return <div className="text-center py-40">Loading...</div>
+  }
+
+  if (filteredProducts.length === 0) {
+    return <div className="text-center py-40">Nothing related &#58;&#40;</div>
   }
 
   return (
     <section className="flex justify-center">
       <div className="grid w-full max-w-screen-lg justify-center sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 sm:gap-2 md:gap-3 xl:gap-4 place-items-center py-20 ">
 
-        {products.map((product) => (
+        {filteredProducts.map((product) => (
           <div key={product.id} className="relative rounded-xl hover:cursor-pointer w-56 h-60 active:scale-110 transition ease duration-75">
             <div className="relative w-full h-4/5 mb-2">
               <img src={product.images[0]} alt={product.title} className="w-full h-full object-cover rounded-lg" />
