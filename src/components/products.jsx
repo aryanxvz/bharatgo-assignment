@@ -5,6 +5,7 @@ export const Products = ({ currentPath }) => {
   const [products, setProducts] = useState([])
   const [filteredProducts, setFilteredProducts] = useState([])
   const [loading, setLoading] = useState(true)
+  const [searchQuery, setSearchQuery] = useState("")
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -32,15 +33,26 @@ export const Products = ({ currentPath }) => {
       '/toys': 'Toys'
     }
     
-    if (currentPath === '/') {
-      setFilteredProducts(products)
-    } else if (categoryMap[currentPath]) {
-      const filtered = products.filter(product => 
+    let filtered = [...products]
+    
+    if (currentPath !== '/' && categoryMap[currentPath]) {
+      filtered = filtered.filter(product => 
         product.category.name.toLowerCase().includes(categoryMap[currentPath].toLowerCase())
       )
-      setFilteredProducts(filtered)
     }
-  }, [currentPath, products])
+    
+    if (searchQuery.trim() !== "") {
+      filtered = filtered.filter(product =>
+        product.title.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    }
+    
+    setFilteredProducts(filtered)
+  }, [currentPath, products, searchQuery])
+
+  const handleSearchChange = (e) => {
+    setSearchQuery(e.target.value)
+  }
 
   if (loading) {
     return <div className="text-center py-40">Loading...</div>
@@ -51,8 +63,18 @@ export const Products = ({ currentPath }) => {
   }
 
   return (
-    <section className="flex justify-center">
-      <div className="grid w-full max-w-screen-lg justify-center sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 sm:gap-2 md:gap-3 xl:gap-4 place-items-center py-20 ">
+    <section className="flex flex-col items-center">
+      <div className="flex flex-col justify-center items-center mt-20">
+        <span>Home</span>
+        <input 
+          placeholder="Search a product" 
+          className="w-80 rounded-lg p-4 my-4 border border-black" 
+          value={searchQuery}
+          onChange={handleSearchChange}
+        />
+      </div>
+
+      <div className="grid w-full max-w-screen-lg justify-center sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 sm:gap-2 md:gap-3 xl:gap-4 place-items-center">
 
         {filteredProducts.map((product) => (
           <div key={product.id} className="relative rounded-xl hover:cursor-pointer w-56 h-60 active:scale-110 transition ease duration-75">
@@ -69,7 +91,7 @@ export const Products = ({ currentPath }) => {
             </div>
           </div>
         ))}
-
+        
       </div>
     </section>
   )
