@@ -1,24 +1,9 @@
 import { HiX, HiOutlineMinus, HiOutlinePlus } from "react-icons/hi"
 
-export const Cart = ({ isOpen, onClose, cartItems }) => {
+export const Cart = ({ isOpen, onClose, cartItems, increaseQuantity, decreaseQuantity, removeItem }) => {
   if (!isOpen) return null
 
   const totalPrice = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
-
-  const increaseQuantity = (itemId) => {
-    // implement this function in your parent component and pass it down as a prop
-    console.log(`Increase quantity for item ${itemId}`)
-  }
-
-  const decreaseQuantity = (itemId) => {
-    // implement this function in your parent component and pass it down as a prop
-    console.log(`Decrease quantity for item ${itemId}`)
-  }
-
-  const removeItem = (itemId) => {
-    // implement this function in your parent component and pass it down as a prop
-    console.log(`Remove item ${itemId}`)
-  }
 
   return (
     <div className="fixed right-0 top-0 bg-white mt-[70px] z-40">
@@ -63,13 +48,12 @@ export const Cart = ({ isOpen, onClose, cartItems }) => {
             <p className="text-center py-10">Your cart is empty</p>
           )}
 
-          {/* Always show total and checkout button */}
           <div className="fixed bottom-0 w-[325px] bg-white rounded-sm border-t border-t-gray-600 p-2">
             <div className="flex justify-between">
               <span className="font-medium">Total:</span>
               <span className="text-lg font-bold">${totalPrice.toFixed(2)}</span>
             </div>
-            <button className="w-full bg-black text-white p-1 rounded-md">
+            <button className="w-full bg-black text-white p-1 rounded-md hover:bg-gray-800">
               Checkout
             </button>
           </div>

@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react"
-import { HiPlus } from "react-icons/hi"
+import { HiPlus, HiCheck } from "react-icons/hi"
 import { ProductDetail } from "./product-details"
 import { useLocation } from "react-router-dom"
 
-export const Products = ({ currentPath }) => {
+export const Products = ({ currentPath, addToCart, setIsCartOpen, cartItems }) => {
   const [products, setProducts] = useState([])
   const [filteredProducts, setFilteredProducts] = useState([])
   const [loading, setLoading] = useState(true)
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedProduct, setSelectedProduct] = useState(null)
+  const [addedItems, setAddedItems] = useState({})
   const location = useLocation()
 
   useEffect(() => {
@@ -26,6 +27,15 @@ export const Products = ({ currentPath }) => {
     }
     fetchProducts()
   }, [])
+
+  useEffect(() => {
+    const cartItemMap = {};
+    cartItems.forEach(item => {
+      cartItemMap[item.id] = true;
+    });
+    
+    setAddedItems(cartItemMap);
+  }, [cartItems]);
 
   useEffect(() => {
     if (products.length === 0) return
@@ -65,6 +75,12 @@ export const Products = ({ currentPath }) => {
   const handleCloseDetail = () => {
     setSelectedProduct(null)
   }
+  
+  const handleAddToCart = (e, product) => {
+    e.stopPropagation();
+    addToCart(product);
+    setIsCartOpen(true);
+  }
 
   useEffect(() => {
     setSelectedProduct(null)
@@ -92,8 +108,13 @@ export const Products = ({ currentPath }) => {
             <div className="relative w-full h-4/5 mb-2">
               <img src={product.images[0]} alt={product.title} className="w-full h-full object-cover rounded-lg" />
               <div className="absolute bottom-0 left-0 bg-white/60 rounded-lg text-black text-sm m-1 px-2">{product.category.name}</div>
-              <button className="absolute top-2 right-2 bg-white rounded-full p-1 shadow">
-                <HiPlus className="text-black w-4 h-4" />
+              <button onClick={(e) => handleAddToCart(e, product)}
+                className={`absolute top-2 right-2 cursor-pointer ${addedItems[product.id] ? 'bg-black' : 'bg-white'} rounded-full p-1 shadow`}>
+                {addedItems[product.id] ? (
+                  <HiCheck className="text-white w-4 h-4" />
+                ) : (
+                  <HiPlus className="text-black w-4 h-4" />
+                )}
               </button>
             </div>
             <div className="flex justify-between">
@@ -108,6 +129,10 @@ export const Products = ({ currentPath }) => {
         <ProductDetail 
           product={selectedProduct}
           onClose={handleCloseDetail}
+          addToCart={() => {
+            addToCart(selectedProduct);
+            setIsCartOpen(true);
+          }}
         />
       )}
     </section>
