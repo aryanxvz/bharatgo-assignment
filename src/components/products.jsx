@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { HiPlus, HiCheck } from "react-icons/hi"
+import { HiPlus, HiCheck, HiChevronDown } from "react-icons/hi"
 import { ProductDetail } from "./product-details"
 import { useLocation } from "react-router-dom"
 import { motion } from "framer-motion"
@@ -11,6 +11,8 @@ export const Products = ({ currentPath, addToCart, setIsCartOpen, cartItems }) =
   const [searchQuery, setSearchQuery] = useState("")
   const [selectedProduct, setSelectedProduct] = useState(null)
   const [addedItems, setAddedItems] = useState({})
+  const [isSortOpen, setIsSortOpen] = useState(false)
+  const [sortOption, setSortOption] = useState("default")
   const location = useLocation()
 
   useEffect(() => {
@@ -61,9 +63,16 @@ export const Products = ({ currentPath, addToCart, setIsCartOpen, cartItems }) =
         product.title.toLowerCase().includes(searchQuery.toLowerCase())
       )
     }
+
+    // Apply sorting
+    if (sortOption === "priceLowToHigh") {
+      filtered.sort((a, b) => a.price - b.price);
+    } else if (sortOption === "priceHighToLow") {
+      filtered.sort((a, b) => b.price - a.price);
+    }
     
     setFilteredProducts(filtered)
-  }, [currentPath, products, searchQuery])
+  }, [currentPath, products, searchQuery, sortOption])
 
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value)
@@ -81,6 +90,11 @@ export const Products = ({ currentPath, addToCart, setIsCartOpen, cartItems }) =
     e.stopPropagation();
     addToCart(product);
     setIsCartOpen(true);
+  }
+
+  const handleSortOptionClick = (option) => {
+    setSortOption(option);
+    setIsSortOpen(false);
   }
 
   useEffect(() => {
@@ -139,9 +153,44 @@ export const Products = ({ currentPath, addToCart, setIsCartOpen, cartItems }) =
 
   return (
     <section className="flex flex-col items-center">
-      <div className="flex flex-col justify-center items-center mt-20">
-        <span>Home</span>
-        <input placeholder="Search a product" value={searchQuery} onChange={handleSearchChange} className="w-80 rounded-lg p-4 my-4 border border-black" />
+      <div className="w-full max-w-screen-lg px-4 mt-20">
+        <div className="flex justify-between items-center mb-4">
+          <div className="flex-1 text-center">
+            <span className="pl-16">Home</span>
+          </div>
+          <div className="relative">
+            <button onClick={() => setIsSortOpen(!isSortOpen)}
+              className="flex items-center cursor-pointer">
+              Sort by
+              <HiChevronDown className={`transition-transform ${isSortOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {isSortOpen && (
+              <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }}
+                className="absolute top-full right-0 mt-1 w-48 bg-white border border-black rounded-lg shadow-lg z-10">
+                <button onClick={() => handleSortOptionClick("default")}
+                  className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${sortOption === "default" ? 'bg-gray-100' : ''}`}>
+                  Default
+                </button>
+                <button onClick={() => handleSortOptionClick("priceLowToHigh")}
+                  className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${sortOption === "priceLowToHigh" ? 'bg-gray-100' : ''}`}>
+                  Price: Low to High
+                </button>
+                <button onClick={() => handleSortOptionClick("priceHighToLow")}
+                  className={`w-full text-left px-4 py-2 hover:bg-gray-100 ${sortOption === "priceHighToLow" ? 'bg-gray-100' : ''}`}>
+                  Price: High to Low
+                </button>
+              </motion.div>
+            )}
+          </div>
+        </div>
+        <div className="flex justify-center">
+          <input 
+            placeholder="Search a product" 
+            value={searchQuery} 
+            onChange={handleSearchChange} 
+            className="w-80 rounded-lg p-4 mb-4 border border-black" 
+          />
+        </div>
       </div>
 
       <motion.div 
