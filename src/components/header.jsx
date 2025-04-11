@@ -1,16 +1,20 @@
 import { HiShoppingCart } from "react-icons/hi2"
 import { Link, useLocation } from "react-router-dom"
 import { Cart } from "./cart"
+import { useState } from "react"
+import { FaUserCircle } from "react-icons/fa"
+import { FaBoxArchive } from "react-icons/fa6"
 
 export const Header = ({ cartItems, increaseQuantity, decreaseQuantity, removeItem, isCartOpen, setIsCartOpen }) => {
   const location = useLocation()
+  const [showMobileMenu, setShowMobileMenu] = useState(false)
   const isActive = (path) => location.pathname === path
-
   const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0)
 
   return (
     <>
       <section className="bg-white flex justify-between items-center fixed z-50 top-0 w-full border-b-2 border-b-gray-200 py-5 px-8">
+
         <ul className="flex items-center gap-4">
           <li className="text-lg font-semibold md:inline hidden">
             <Link to="/">Shopi</Link>
@@ -32,7 +36,7 @@ export const Header = ({ cartItems, increaseQuantity, decreaseQuantity, removeIt
           </li>
         </ul>
 
-        <ul className="flex items-center gap-4">
+        <ul className="md:flex hidden items-center gap-4">
           <li className="text-sm font-light text-gray-500">
             userintheapp@test.com
           </li>
@@ -47,6 +51,25 @@ export const Header = ({ cartItems, increaseQuantity, decreaseQuantity, removeIt
             <span className="text-sm font-light">{totalItems}</span>
           </li>
         </ul>
+
+        <div className="md:hidden block relative">
+          <FaUserCircle className="h-5 w-5 cursor-pointer" onClick={() => setShowMobileMenu(!showMobileMenu)}/>
+          {showMobileMenu && (
+            <div className="absolute right-0 mt-2 w-64 bg-white shadow-lg rounded-lg border border-gray-600 z-50 p-4">
+              <p className="text-sm text-gray-500 mb-2">userintheapp@test.com</p>
+              <Link to="/my-orders" className="flex items-center gap-2 text-sm py-2">
+                <span><FaBoxArchive className="h-5 w-5"/></span> My Orders
+              </Link>
+              <Link to="/my-account" className="flex items-center gap-2 text-sm py-2">
+                <span><FaUserCircle className="h-5 w-5"/></span> My Account
+              </Link>
+              <div className="flex items-center gap-2 text-sm py-2 cursor-pointer" onClick={() => setIsCartOpen(!isCartOpen)}>
+                <HiShoppingCart className="h-5 w-5" />
+                <span>{totalItems}</span>
+              </div>
+            </div>
+          )}
+        </div>
       </section>
 
       <Cart 
