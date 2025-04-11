@@ -1,8 +1,9 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom"
+import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { useState } from "react"
 import { Home } from './pages/home'
 import { MyAccount } from './pages/my-account'
 import { MyOrders } from "./pages/my-orders"
+import OrderDetails from "./components/order-details"
 
 function App() {
   const [cartItems, setCartItems] = useState([]);
@@ -58,8 +59,9 @@ function App() {
           <Route path="/electronics" element={<Home cartItems={cartItems} addToCart={addToCart} increaseQuantity={increaseQuantity} decreaseQuantity={decreaseQuantity} removeItem={removeItem} />} />
           <Route path="/furnitures" element={<Home cartItems={cartItems} addToCart={addToCart} increaseQuantity={increaseQuantity} decreaseQuantity={decreaseQuantity} removeItem={removeItem} />} />
           <Route path="/toys" element={<Home cartItems={cartItems} addToCart={addToCart} increaseQuantity={increaseQuantity} decreaseQuantity={decreaseQuantity} removeItem={removeItem} />} />
-          <Route path="/my-orders" element={<MyOrders cartItems={cartItems} addToCart={addToCart} increaseQuantity={increaseQuantity} decreaseQuantity={decreaseQuantity} removeItem={removeItem} />} />
           <Route path="/my-account" element={<MyAccount cartItems={cartItems} increaseQuantity={increaseQuantity} decreaseQuantity={decreaseQuantity} removeItem={removeItem} />} />
+          <Route path="/my-orders" element={<MyOrders cartItems={cartItems} addToCart={addToCart} increaseQuantity={increaseQuantity} decreaseQuantity={decreaseQuantity} removeItem={removeItem} />} />
+          <Route path="/orders/:id" element={<OrderDetails />} />
         </Routes>
       </BrowserRouter>
     </>

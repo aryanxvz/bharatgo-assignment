@@ -1,7 +1,25 @@
+import { useNavigate } from "react-router-dom";
 import { HiX, HiOutlineMinus, HiOutlinePlus } from "react-icons/hi"
 
 export const Cart = ({ isOpen, onClose, cartItems, increaseQuantity, decreaseQuantity, removeItem }) => {
+  const navigate = useNavigate();
+
   if (!isOpen) return null
+
+  const handleCheckout = () => {
+    const newOrder = {
+      id: Date.now(),
+      date: new Date().toLocaleDateString('en-GB'),
+      total: totalPrice.toFixed(2),
+      items: cartItems,
+    };
+
+    const existingOrders = JSON.parse(localStorage.getItem("orders") || "[]");
+    localStorage.setItem("orders", JSON.stringify([...existingOrders, newOrder]));
+
+    onClose();
+    navigate("/my-orders");
+  };
 
   const totalPrice = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0)
 
@@ -53,7 +71,7 @@ export const Cart = ({ isOpen, onClose, cartItems, increaseQuantity, decreaseQua
               <span className="font-medium">Total:</span>
               <span className="text-lg font-bold">${totalPrice.toFixed(2)}</span>
             </div>
-            <button className="w-full bg-black text-white p-1 rounded-md hover:bg-gray-800">
+            <button onClick={handleCheckout} className="w-full bg-black text-white p-1 rounded-md hover:bg-gray-800">
               Checkout
             </button>
           </div>
