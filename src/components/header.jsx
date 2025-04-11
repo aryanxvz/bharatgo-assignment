@@ -1,9 +1,17 @@
 import { HiShoppingCart } from "react-icons/hi2"
 import { Link, useLocation } from "react-router-dom"
+import { useState } from "react"
+import { Cart } from "./cart"
 
 export const Header = () => {
   const location = useLocation()
   const isActive = (path) => location.pathname === path
+  const [isCartOpen, setIsCartOpen] = useState(false)
+
+  const cartItems = [
+  ]
+
+  const totalItems = cartItems.reduce((sum, item) => sum + item.quantity, 0)
 
   return (
     <>
@@ -39,12 +47,18 @@ export const Header = () => {
           <li className="text-sm font-light">
             <Link to="/my-account" className={`${isActive("/my-account") ? "underline underline-offset-8" : ""}`}>My Account</Link>
           </li>
-          <li className="flex gap-2">
+          <li className="flex gap-2 cursor-pointer" onClick={() => setIsCartOpen(!isCartOpen)}>
             <HiShoppingCart className="h-6 w-6" />
-            <span className="text-sm font-light">0</span>
+            <span className="text-sm font-light">{totalItems}</span>
           </li>
         </ul>
       </section>
+
+      <Cart 
+        isOpen={isCartOpen} 
+        onClose={() => setIsCartOpen(false)}
+        cartItems={cartItems}
+      />
     </>
   )
 }
